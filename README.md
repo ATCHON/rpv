@@ -10,7 +10,7 @@ Microbial Resistance, Plasmid and Virulence (RPV) identification
     * [Environment](#environment)
     * [Databases](#databases)
   * [Usage](#usage)
-  * [References](#reference)
+  * [References](#references)
 
 
 ## **Introduction**
@@ -117,3 +117,12 @@ $ rpv.py command [OPTIONS] DATABASE SEQUENCES...
 * `--output PATH`: Output file path of the result (.tsv).
 * `--identity INTEGER RANGE`: Minimum percentage of sequence identity [default: 90]
 * `--help`: Show this message and exit.
+
+## **References**
+-----------------
+
+- Bortolaia V, Kaas RS, Ruppe E, Roberts MC, Schwarz S, Cattoir V, Philippon A, Allesoe RL, Rebelo AR, Florensa AF, Fagelhauer L, Chakraborty T, Neumann B, Werner G, Bender JK, Stingl K, Nguyen M, Coppens J, Xavier BB, Malhotra-Kumar S, Westh H, Pinholt M, Anjum MF, Duggett NA, Kempf I, Nykäsenoja S, Olkkola S, Wieczorek K, Amaro A, Clemente L, Mossong J, Losch S, Ragimbeau C, Lund O, Aarestrup FM. ResFinder 4.0 for predictions of phenotypes from genotypes. J Antimicrob Chemother. 2020 Dec 1;75(12):3491-3500. doi: 10.1093/jac/dkaa345. PMID: 32780112; PMCID: PMC7662176.
+
+- PlasmidFinder and pMLST: in silico detection and typing of plasmids. Carattoli A, Zankari E, Garcia-Fernandez A, Volby Larsen M, Lund O, Villa L, Aarestrup FM, Hasman H. Antimicrob. Agents Chemother. 2014. April 28th.
+
+- Liu B, Zheng D, Zhou S, Chen L, Yang J. VFDB 2022: a general classification scheme for bacterial virulence factors. Nucleic Acids Res. 2022 Jan 7;50(D1):D912-D917. doi: 10.1093/nar/gkab1107. PMID: 34850947; PMCID: PMC8728188.
