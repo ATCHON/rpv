@@ -68,8 +68,7 @@ And it returns a table mentioning the genes identified for each strain.
 
 ```
   git clone https://github.com/ATCHON/rpv.git
-```
-Or download it in .zip format
+```Or download it in .zip format
 
 ### **Databases**
 
@@ -100,6 +99,8 @@ Create a directory for downloading last databases updates.
   gunzip VFDB_setA_nt.fas.gz
   awk '/^>/{f=!d[$1];d[$1]=1}f' VFDB_setA_nt.fas > named_finaly_database.db
   ```
+Default databases are available in ```rpv/content/databases```. \
+The update date corresponds to the values following the database name in the format "database_name_creation_date.db".
 
 Default databases are available for use in ```rpv/content/databases```
 
