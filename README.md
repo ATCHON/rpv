@@ -68,7 +68,8 @@ And it returns a table mentioning the genes identified for each strain.
 
 ```
   git clone https://github.com/ATCHON/rpv.git
-```Or download it in .zip format
+```
+Or download it in .zip format
 
 ### **Databases**
 
