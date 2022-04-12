@@ -13,6 +13,7 @@
 
 __version__ = "0.1.0"
 
+
 import shlex
 import subprocess
 from typing import List, Optional
@@ -22,8 +23,11 @@ import typer
 from pathlib import Path
 
 WK_DIR = Path(__file__).resolve().parent
+TEMP_DIR = Path.cwd() / "temp"
+TEMP_DIR.mkdir(exist_ok=True)
 BLAT_EXE = WK_DIR / "content" / "src" / "blat"
 FILTER_BLAST = WK_DIR / "content" / "src" / "filter_blast.py"
+
 
 app = typer.Typer()
 
@@ -43,12 +47,12 @@ def run_blat(fasta, db, identity=int):
     Returns: tsv, Résultat temporaire de l'identification des gènes via Blat.
     """
 
-    blat_cmd = f"{BLAT_EXE} -fine -minIdentity={identity} -out=blast8 {db} {fasta} {WK_DIR / 'tmp.blat'}"
+    blat_cmd = f"{BLAT_EXE} -fine -minIdentity={identity} -out=blast8 {db} {fasta} {TEMP_DIR / 'tmp.blat'}"
     subprocess.run(shlex.split(blat_cmd))
 
-    flt_cmd = f"python3 {FILTER_BLAST} -r {db} {WK_DIR / 'tmp.blat'} -o {WK_DIR / 'tmp.tsv'}"
+    flt_cmd = f"python3 {FILTER_BLAST} -r {db} {TEMP_DIR / 'tmp.blat'} -o {TEMP_DIR / 'tmp.tsv'}"
     subprocess.run(shlex.split(flt_cmd))
-    return pd.read_csv(f"{WK_DIR / 'tmp.tsv'}", sep='\t')
+    return pd.read_csv(f"{TEMP_DIR / 'tmp.tsv'}", sep='\t')
 
 
 def sort_dataframe(df):
