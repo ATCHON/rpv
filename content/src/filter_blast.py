@@ -4,41 +4,40 @@
 
 """Filter Blast result (format ) to return best unique position"""
 
-import sys
 import argparse
-import os
-import subprocess
+import sys
+
 import numpy
 from Bio import SeqIO
 
 desc = "Filter Blast result (format 6) to return best unique position for query"
-command = argparse.ArgumentParser(prog='filter_blast.py', \
-    description=desc, usage='%(prog)s [options] blast')
-command.add_argument('-o', '--out', nargs="?", \
-    type=argparse.FileType("w"), default=sys.stdout, \
-    help='Return filter blast file, default=stdout')
-command.add_argument('-i', '--identity', nargs="?", \
-    type=int, default=90, \
-    help='Minimun percentage identity to return result, default 90')
-command.add_argument('-c', '--coverage', nargs="?", \
-    type=int, default=80, \
-    help='Minimun percentage coverage to return result, work only if fasta is supply, default 80')
-command.add_argument('--overlap', nargs="?", \
-    type=int, default=80, \
-    help='Minimun percentage overlap between to alignment to merge it, default 80')
-command.add_argument('--fraction', nargs="?", \
-    type=int, default=2, \
-    help='Maximun percentage fraction of length difference to compar identity between 2 alignments, default 2')
-command.add_argument('-r', '--reference', nargs="?", \
-    type=argparse.FileType("r"), \
-    help='Add reference fasta file for coverage check')
-command.add_argument('-q', '--query', nargs="?", \
-    type=argparse.FileType("r"), \
-    help='Add query fasta file for coverage check')
-command.add_argument('blast', type=argparse.FileType("r"), \
-    help='Tabular blast result (format 6)')
-command.add_argument('-v', '--version', action='version', \
-    version='%(prog)s 0.3.0')
+command = argparse.ArgumentParser(prog='filter_blast.py',
+                                  description=desc, usage='%(prog)s [options] blast')
+command.add_argument('-o', '--out', nargs="?",
+                     type=argparse.FileType("w"), default=sys.stdout,
+                     help='Return filter blast file, default=stdout')
+command.add_argument('-i', '--identity', nargs="?",
+                     type=int, default=90,
+                     help='Minimum percentage identity to return result, default 90')
+command.add_argument('-c', '--coverage', nargs="?",
+                     type=int, default=80,
+                     help='Minimum percentage coverage to return result, work only if fasta is supply, default 80')
+command.add_argument('--overlap', nargs="?",
+                     type=int, default=80,
+                     help='Minimum percentage overlap between to alignment to merge it, default 80')
+command.add_argument('--fraction', nargs="?",
+                     type=int, default=2,
+                     help='Maximum percentage fraction of length difference to compare identity between 2 alignments, default 2')
+command.add_argument('-r', '--reference', nargs="?",
+                     type=argparse.FileType("r"),
+                     help='Add reference fasta file for coverage check')
+command.add_argument('-q', '--query', nargs="?",
+                     type=argparse.FileType("r"),
+                     help='Add query fasta file for coverage check')
+command.add_argument('blast', type=argparse.FileType("r"),
+                     help='Tabular blast result (format 6)')
+command.add_argument('-v', '--version', action='version',
+                     version='%(prog)s 0.3.0')
 
 
 def read_description(fasta):
@@ -49,11 +48,14 @@ def read_description(fasta):
         for seq in SeqIO.parse(fasta, 'fasta')
     }
 
+
 def fraction(len1, len2):
-    return float(numpy.abs(len1-len2))/numpy.mean([len1,len2])
+    return float(numpy.abs(len1 - len2)) / numpy.mean([len1, len2])
+
 
 class Align:
     """A simple Align class"""
+
     def __init__(self, value):
         self.value = value
         self.saccver = self.get("saccver")
@@ -67,25 +69,26 @@ class Align:
         if self.qaccver != align.qaccver:
             return False
         over = len(self.maps().intersection(align.maps()))
-        if over == 0 or (float(over)/min(self.length,align.length)) * 100 < overlap :
+        if over == 0 or (float(over) / min(self.length, align.length)) * 100 < overlap:
             return False
         return True
 
     def get(self, key):
-        return(self.value.get(key))
+        return self.value.get(key)
 
     def maps(self):
         return set(range(self.qstart, self.qend))
 
     def coverage(self, totlength):
-        return((float(self.length)/totlength)*100)
+        return (float(self.length) / totlength) * 100
 
     def __len__(self):
-        return(self.length)
+        return self.length
 
 
 class Aligns:
     """A class to compile alignment"""
+
     def __init__(self, overlap, fraction):
         self.overlap = overlap
         self.fraction = fraction
@@ -96,10 +99,10 @@ class Aligns:
         """Choice best on similar length and pident"""
         als = self.queries.setdefault(align.qaccver, [])
         add = False
-        for i,al in enumerate(als):
+        for i, al in enumerate(als):
             if al.overlap(align, self.overlap):
                 add = True
-                if fraction(align.length,al.length) * 100 < self.fraction:
+                if fraction(align.length, al.length) * 100 < self.fraction:
                     if align.pident > al.pident:
                         als[i] = align
                 elif align.length > al.length:
@@ -119,8 +122,9 @@ class Aligns:
     def __len__(self):
         return sum(map(len, self.queries.values()))
 
-# sourcery skip: raise-specific-error
-if __name__=='__main__':
+
+# sourcery no-metrics skip: raise-specific-error
+if __name__ == '__main__':
     """Performed job on execution script"""
     args = command.parse_args()
     output = args.out
@@ -128,9 +132,9 @@ if __name__=='__main__':
     descref = read_description(args.reference)
     descquery = read_description(args.query)
 
-    #header = ["chr", "database", "feature", "start", "stop", "ident", "strand", "other", "informations"]
-    header = ["qaccver", "saccver",  "pident", "length", "mismatch", "gapopen", "qstart", "qend",
-              "sstart", "send" ,"evalue","bitscore"]
+    # header = ["chr", "database", "feature", "start", "stop", "ident", "strand", "other", "informations"]
+    header = ["qaccver", "saccver", "pident", "length", "mismatch", "gapopen", "qstart", "qend",
+              "sstart", "send", "evalue", "bitscore"]
     aligns = Aligns(args.overlap, args.fraction)
     for line in args.blast.readlines():
         if line[0] == "#":
@@ -139,11 +143,11 @@ if __name__=='__main__':
         value = dict(zip(header, line.strip().split()))
         al = Align(value)
 
-        ##identity
-        if al.pident < args.identity :
+        ## identity
+        if al.pident < args.identity:
             continue
 
-        ##coverage
+        ## coverage
         lens = []
         if descref is not None:
             if descref.get(al.get('saccver')) is None:
@@ -158,7 +162,7 @@ if __name__=='__main__':
             continue
         aligns.add_align(al)
 
-    ##export results
+    ## export results
     output.write("\t".join(header))
     if descref is not None:
         output.write("\tdescref")
@@ -174,4 +178,4 @@ if __name__=='__main__':
             towrite.append(descquery.get(al.get('qaccver'))[0])
         else:
             towrite.append(".")
-        output.write("\t".join(towrite)+"\n")
+        output.write("\t".join(towrite) + "\n")
