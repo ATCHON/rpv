@@ -68,7 +68,7 @@ And it returns a table mentioning the genes identified for each strain.
 
 ```
   git clone https://github.com/ATCHON/rpv.git
-```
+```Or download it in .zip format
 
 ### **Databases**
 
@@ -87,11 +87,12 @@ Create a directory for downloading last databases updates.
 ```
   git clone https://aatchon@bitbucket.org/genomicepidemiology/plasmidfinder_db.git
   cd resfinder_db
-  bash RPV/scr/rmv_dup_seq.sh named_temporary_database.db named_finaly_database.db
+  bash rpv/content/scr/rmv_dup_seq.sh named_temporary_database.db named_finaly_database.db
 ```
 
 - Virulence Factor database
-  - Go to [Download page](http://www.mgc.ac.cn/VFs/Down/VFDB_setA_nt.fas.gz)
+  - Go to [Download page](http://www.mgc.ac.cn/VFs/download.htm)
+  - Select "DNA sequences of dataset"
   - Remove duplicate sequences
 
   ```
@@ -100,6 +101,8 @@ Create a directory for downloading last databases updates.
   ```
 Default databases are available in ```rpv/content/databases```. \
 The update date corresponds to the values following the database name in the format "database_name_creation_date.db".
+
+Default databases are available for use in ```rpv/content/databases```
 
 ## **Usage**
 
