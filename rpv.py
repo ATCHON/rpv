@@ -38,7 +38,7 @@ def version_callback(value: bool):
         raise typer.Exit()
 
 
-def run_blat(fasta, db, identity=int):
+def run_blat(fasta, db, identity=int, coverage=int):
     """
     run_blat : Function running BLAT (Blast-Like Alignment Tool), for the identification of genes of interest.
 
@@ -50,7 +50,7 @@ def run_blat(fasta, db, identity=int):
     blat_cmd = f"{BLAT_EXE} -fine -minIdentity={identity} -out=blast8 {db} {fasta} {TEMP_DIR / 'tmp.blat'}"
     subprocess.run(shlex.split(blat_cmd))
 
-    flt_cmd = f"python3 {FILTER_BLAST} -r {db} {TEMP_DIR / 'tmp.blat'} -o {TEMP_DIR / 'tmp.tsv'}"
+    flt_cmd = f"python3 {FILTER_BLAST} -r {db} {TEMP_DIR / 'tmp.blat'} -i {identity} -c {coverage} -o {TEMP_DIR / 'tmp.tsv'}"
     subprocess.run(shlex.split(flt_cmd))
     return pd.read_csv(f"{TEMP_DIR / 'tmp.tsv'}", sep='\t')
 
@@ -91,7 +91,7 @@ def manage_plasmid_df(df):
 
 
 # @app.command('run')
-def main(database, sequences, identity):
+def main(database, sequences, identity, coverage):
     """
     main : Execute search on database and add sample name on dataframe
 
@@ -105,7 +105,7 @@ def main(database, sequences, identity):
     for nb_strain, sequence in enumerate(sequences, start=1):
         seq_name = Path(sequence).name
         typer.echo(f"Search genes for sample {seq_name} .... N°{nb_strain}")
-        df_temp = run_blat(sequence, database, identity)
+        df_temp = run_blat(sequence, database, identity, coverage)
         df_temp['Sample'] = str(seq_name.split('.')[0])
         df = pd.concat([df, df_temp]) if df is not None else df_temp
         typer.echo('--' * 20)
@@ -116,11 +116,12 @@ def main(database, sequences, identity):
 def resistance(database: Path = typer.Argument(..., help="ResFinder Database fasta format."),
                output: Optional[Path] = typer.Option(None, help="Output file path of the result (.tsv)."),
                identity: int = typer.Option(90, max=100, help="Minimum percentage of sequence identity."),
+               coverage: int = typer.Option(80, max=100, help="Minimum percentage of sequence identity."),
                sequences: List[Path] = typer.Argument(..., help="Fasta format sequences.")):
     """
     Search for resistance genes via the Resfinder database
     """
-    df = main(database=database, sequences=sequences, identity=identity)
+    df = main(database=database, sequences=sequences, identity=identity, coverage=coverage)
     if df.empty is not True:  # type: ignore
         df = manage_resistance_df(df)
         typer.echo(df)
@@ -134,11 +135,12 @@ def resistance(database: Path = typer.Argument(..., help="ResFinder Database fas
 def plasmid(database: Path = typer.Argument(..., help="PlasmidFinder Database fasta format."),
             output: Optional[Path] = typer.Option(None, help="Output file path of the result (.tsv)."),
             identity: int = typer.Option(90, max=100, help="Minimum percentage of sequence identity."),
+            coverage: int = typer.Option(80, max=100, help="Minimum percentage of sequence identity."),
             sequences: List[Path] = typer.Argument(..., help="Fasta format sequences.")):
     """ 
     Search for plasmid genes via the PlasmidFinder database 
     """
-    df = main(database=database, sequences=sequences, identity=identity)
+    df = main(database=database, sequences=sequences, identity=identity, coverage=coverage)
     if df.empty is not True:  # type: ignore
         df = manage_plasmid_df(df)
         typer.echo(df)
@@ -152,11 +154,12 @@ def plasmid(database: Path = typer.Argument(..., help="PlasmidFinder Database fa
 def virulence(database: Path = typer.Argument(..., help="VFDB (Virulence Factor Database) fasta format."),
               output: Optional[Path] = typer.Option(None, help="Output file path of the result (.tsv)."),
               identity: int = typer.Option(90, max=100, help="Minimum percentage of sequence identity."),
+              coverage: int = typer.Option(80, max=100, help="Minimum percentage of sequence identity."),
               sequences: List[Path] = typer.Argument(..., help="Fasta format sequences.")):
     """
     Search for virulence genes via the Virulence Factor database 
     """
-    df = main(database=database, sequences=sequences, identity=identity)
+    df = main(database=database, sequences=sequences, identity=identity, coverage=coverage)
     if df.empty is not True:  # type: ignore
         df = manage_virulence_df(df)
         typer.echo(df)
