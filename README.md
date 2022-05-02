@@ -140,6 +140,8 @@ $ rpv.py command [OPTIONS] DATABASE SEQUENCES...
 
 * `--output PATH`: Output file path of the result (.tsv).
 * `--identity INTEGER RANGE`: Minimum percentage of sequence identity [default: 90]
+* `--coverage INTEGER RANGE`:  Minimum percentage of sequence identity.
+                            [default: 80]
 * `--help`: Show this message and exit.
 
 ## **References**
